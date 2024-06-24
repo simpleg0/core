@@ -11,6 +11,9 @@ jobs:
   changes:
     name: "Detect changes' types"
     runs-on: ubuntu-latest
+    outputs:
+      src: ${{ steps.changes.outputs.src == 'true' }}
+      test: ${{ steps.changes.outputs.test == 'true' }}
     steps:
       - name: "Detect changes' type"
         id: changes
