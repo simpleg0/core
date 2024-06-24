@@ -8,7 +8,7 @@ use serde_json::Value;
 use uuid::Uuid;
 
 use crate::error::Error;
-use crate::error_kind::{SECRET_MANAGER_FAILURE, SERIALIZATION_FAILURE};
+use crate::error_kind::SECRET_MANAGER_FAILURE;
 use crate::ok_or_return_error;
 use crate::secrets::secrets_manager::SecretsManager;
 
@@ -52,12 +52,6 @@ impl SecretsManager for BitwardenSecretsManager {
         )
         .value;
 
-        let secret_value = ok_or_return_error!(
-            serde_json::from_str::<Value>(&secret),
-            SERIALIZATION_FAILURE,
-            "failed to read secret as 'Value'"
-        );
-
-        Ok(secret_value)
+        Ok(Value::String(secret))
     }
 }
