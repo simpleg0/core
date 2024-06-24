@@ -11,6 +11,9 @@ jobs:
   changes:
     name: "Detect changes' types"
     runs-on: ubuntu-latest
+    outputs:
+      src: ${{ steps.changes.outputs.src == 'true' }}
+      test: ${{ steps.changes.outputs.test == 'true' }}
     steps:
       - name: "Detect changes' type"
         id: changes
@@ -27,13 +30,15 @@ jobs:
     needs: changes
     name: "Continuous integration & continuous deployment"
     runs-on: ubuntu-latest
+    env:
+      SECRETS_MANAGER_ACCESS_TOKEN: ${{ secrets.TEST_SECRETS_MANAGER_ACCESS_TOKEN }}
     if: needs.changes.outputs.src == 'true' || needs.changes.outputs.test == 'true'
     steps:
       - name: "Checkout code"
         uses: actions/checkout@v4
       - name: "Replace placeholder version"
         run: |
-          sed -i 's/5123.0.0/${{ vars.MAJOR_VERSION }}.${{ vars.MINOR_VERSION }}.${{ github.event.number }}'
+          sed -i 's/5123.0.0/${{ vars.MAJOR_VERSION }}.${{ vars.MINOR_VERSION }}.${{ github.event.number }}/g' Cargo.toml
       - name: "Cache build"
         id: cache-build
         uses: actions/cache@v4
